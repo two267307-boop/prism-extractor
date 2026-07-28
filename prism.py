@@ -6,11 +6,9 @@ try:
     import matplotlib.pyplot as plt
     import pandas as pd
     from matplotlib.ticker import MaxNLocator
-
 except ModuleNotFoundError as e:
     print(e)
     raise SystemExit(1)
-
 
 parser = argparse.ArgumentParser(description="Analyze a YouTube channel")
 parser.add_argument(
@@ -40,60 +38,19 @@ TIMEOUT_YTDLP: int = 60 #script will wait for given amount of time before going 
 CSV_FILENAME = "prism_results.csv"
 
 fields: tuple[str, ...] = (
-    "uploader_id",
-    "channel",
-    "channel_id",
-    "channel_follower_count",
-    "creator",
-    "artist",
-    "title",
-    "thumbnail",
-    "id",
-    "duration",
-    "duration_string",
-    "view_count",
-    "like_count",
-    "comment_count",
-    "repost_count",
-    "average_rating",
-    "categories",
-    "tags",
-    "language",
-    "age_limit",
-    "live_status",
-    "was_live",
-    "availability",
-    "playlist",
-    "playlist_id",
-    "playlist_title",
-    "playlist_index",
-    "n_entries",
-    "fps",
-    "resolution",
-    "format_id",
-    "ext",
-    "vcodec",
-    "acodec",
-    "dynamic_range",
-    "aspect_ratio",
-    "filesize",
-    "tbr",
-    "vbr",
-    "abr",
-    "asr",
-    "audio_channels",
-    "extractor",
-    "extractor_key",
-    "webpage_url",
-    "original_url",
-    "webpage_url_basename",
-    "webpage_url_domain",
-    "upload_date",
-    "timestamp",
-    "release_date",
-    "release_timestamp",
-    "modified_date",
-    "license",
+    "uploader_id","channel","channel_id","channel_follower_count",
+    "creator","artist","title","thumbnail",
+    "id","duration","duration_string","view_count","like_count",
+    "comment_count","repost_count","average_rating","categories",
+    "tags","language","age_limit","live_status","was_live",
+    "availability","playlist","playlist_id","playlist_title",
+    "playlist_index","n_entries","fps","resolution",
+    "format_id","ext","vcodec","acodec",
+    "dynamic_range","aspect_ratio","filesize","tbr",
+    "vbr","abr","asr","audio_channels",
+    "extractor","extractor_key","webpage_url","original_url",
+    "webpage_url_basename","webpage_url_domain","upload_date","timestamp",
+    "release_date","release_timestamp","modified_date","license",
     "epoch",
 )
 
@@ -126,19 +83,12 @@ def write_to_csv(videos: list[str], timeout: int=15) -> None:
 def display_csv() -> None:
     df = pd.read_csv(CSV_FILENAME)
 
-    views = df["view_count"].fillna(0).tolist()
-    duration_rs = df["duration"].fillna(0).tolist()
-    comments = df["comment_count"].fillna(0).tolist()
-    likes = df["like_count"].fillna(0).tolist()
-    reposts = df["repost_count"].fillna(0).tolist()
-    filesize = df["filesize"].fillna(0).tolist()
-
-    views.reverse()
-    duration_rs.reverse()
-    comments.reverse()
-    likes.reverse()
-    reposts.reverse()
-    filesize.reverse()
+    views = df["view_count"].fillna(0).tolist()[::-1]
+    duration_rs = df["duration"].fillna(0).tolist()[::-1]
+    comments = df["comment_count"].fillna(0).tolist()[::-1]
+    likes = df["like_count"].fillna(0).tolist()[::-1]
+    reposts = df["repost_count"].fillna(0).tolist()[::-1]
+    filesize = df["filesize"].fillna(0).tolist()[::-1]
 
     fig, axes = plt.subplots(3, 2, figsize=(10, 8))
     ax1, ax2, ax3, ax4, ax5, ax6 = axes.ravel()

@@ -31,7 +31,7 @@ python prism.py --channel -timeout (1 by default)
 ```
 
 To reuse existing data use ```--reuse``` only.
-By default, the timeout is set to one, meaning it will wait one second before starting another video. This may cause YouTube to rate limit you. In case an error occurs, by default the program will wait 60 seconds before starting of again.
+By default, the timeout is set to one, meaning it will wait two seconds before starting another video. This may cause YouTube to rate limit you. In case an error occurs, by default the program will wait 60 seconds before starting of again.
 
 ## Features
 
