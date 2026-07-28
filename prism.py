@@ -20,7 +20,7 @@ parser.add_argument(
 parser.add_argument(
     "-t", "--timeout",
     type=int,
-    default=1,
+    default=2,
     help="delay in between requests")
 parser.add_argument(
     "-r", "--reuse",
