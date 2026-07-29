@@ -1,11 +1,13 @@
+import time
+import argparse
+import csv
+
 try:
-    import time
-    import argparse
     from yt_dlp import YoutubeDL
-    import csv
     import matplotlib.pyplot as plt
     import pandas as pd
     from matplotlib.ticker import MaxNLocator
+
 except ModuleNotFoundError as e:
     print(e)
     raise SystemExit(1)
@@ -20,6 +22,11 @@ parser.add_argument(
     type=int,
     default=2,
     help="delay in between requests")
+parser.add_argument(
+    "-s", "--save",
+    action="store_true",
+    help="Save plot automatically"
+)
 parser.add_argument(
     "-r", "--reuse",
     action="store_true",
@@ -72,7 +79,7 @@ def write_to_csv(videos: list[str], timeout: int=15) -> None:
                 time.sleep(timeout)
                 try:
                     info = ydl.extract_info(url, download=False)
-                    print(f"▸ [{index}/{len(videos)}] {info['title']}")
+                    print(f"▸ [{index}/{len(videos)}] [{index / len(videos) * 100:5.1f}%] {info['title']}")
                     writer.writerow([info.get(field) for field in fields])
 
                 except Exception as exp:
@@ -112,9 +119,11 @@ def display_csv() -> None:
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
     plt.tight_layout()
+    if args.save:
+        plt.savefig("analysis.png", dpi=600)
     plt.show()
 
-    print(df.to_string())
+    print(df[["title", "view_count", "like_count", "comment_count", "duration"]])
     input(">>> ")
 
 def start() -> None:
