@@ -25,8 +25,7 @@ parser.add_argument(
 parser.add_argument(
     "-s", "--save",
     action="store_true",
-    help="Save plot automatically"
-)
+    help="Save plot as png automatically")
 parser.add_argument(
     "-r", "--reuse",
     action="store_true",
@@ -42,7 +41,7 @@ ydl_opts: dict[str, bool] = {
 }
 
 TIMEOUT_YTDLP: int = 60 #script will wait for given amount of time before going to the next video, the failed one will not be used for analyzation.
-CSV_FILENAME = "prism_results.csv"
+CSV_FILENAME: str = "prism_results.csv"
 
 fields: tuple[str, ...] = (
     "uploader_id","channel","channel_id","channel_follower_count",
@@ -79,9 +78,9 @@ def write_to_csv(videos: list[str], timeout: int=15) -> None:
                 time.sleep(timeout)
                 try:
                     info = ydl.extract_info(url, download=False)
-                    print(f"▸ [{index}/{len(videos)}] [{index / len(videos) * 100:5.1f}%] {info['title']}")
+                    print(f"▸ [{index}/{len(videos)}] [{index / len(videos) * 100:.1f}%] {info['title']}")
                     writer.writerow([info.get(field) for field in fields])
-
+                    file.flush()
                 except Exception as exp:
                     print(f"{url} failed.")
                     print(exp)
@@ -123,7 +122,7 @@ def display_csv() -> None:
         plt.savefig("analysis.png", dpi=600)
     plt.show()
 
-    print(df[["title", "view_count", "like_count", "comment_count", "duration"]])
+    print(df[["title", "view_count", "like_count", "comment_count", "duration"]].to_string())
     input(">>> ")
 
 def start() -> None:
