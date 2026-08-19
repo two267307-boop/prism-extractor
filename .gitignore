@@ -3,3 +3,5 @@ analysis.png
 __pycache__/
 *.pyc
 .gitignore
+creators/
+*.png

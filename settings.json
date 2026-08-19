@@ -1,0 +1,4 @@
+{
+  "ydl_opt": {"quiet": true, "no_warnings": true, "extract_flat": true, "skip_download": true},
+  "csv": {"em_timeout":  15, "datetype": "_%Y-%m-%d--%M"}
+}

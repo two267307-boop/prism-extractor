@@ -1,7 +1,7 @@
 import time
 import argparse
 import csv
-
+import os
 try:
     from yt_dlp import YoutubeDL
     import matplotlib.pyplot as plt
@@ -60,6 +60,7 @@ fields: tuple[str, ...] = (
     "epoch",
 )
 
+
 def get_videos(channel: str) -> list[str]:
     videos: list[str] = []
     with YoutubeDL(ydl_opts) as ydl:
@@ -88,7 +89,7 @@ def write_to_csv(videos: list[str], timeout: int=15) -> None:
 
 def display_csv() -> None:
     df = pd.read_csv(CSV_FILENAME)
-
+    
     views = df["view_count"].fillna(0).tolist()[::-1]
     duration_rs = df["duration"].fillna(0).tolist()[::-1]
     comments = df["comment_count"].fillna(0).tolist()[::-1]
@@ -139,3 +140,56 @@ def start() -> None:
 
 if __name__ == "__main__":
     start()
+
+
+
+"""
+create directories
+
+prism/
+├───README.md
+├───Src/
+│   ├───__main__
+│   ├───get_videos.py
+│   ├───writeo_to_csv.py
+│   ├───display_graph.py
+│   └───app.py
+├───creators/
+│   ├───@USER_1/
+│   │   ├───Result_2025_01_02.csv
+│   │   └───Result_2025_02_03.csv
+│   └───@USER_2/
+│       ├───Result_2025_01_02.csv
+│       └───Result_2025_02_03.csv
+└───settings.json 
+
+├───
+│   ├───
+│   │   └───
+│   └───
+└───
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
