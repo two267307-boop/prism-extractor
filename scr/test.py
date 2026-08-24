@@ -1,13 +1,12 @@
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parent.parent
-filepath = ROOT / "channels" /
 
 
-files = [f for f in ROOT.iterdir() if f.is_file()]
 
-latest_file = max(files, key=lambda f: f.stat().st_ctime)
+channel = "https://www.youtube.com/@Ididathing/videos"
+start = channel.find("@")
+end = channel.find("/", start)
+if end == -1:
+    channel_name = channel[start:]
+else:
+    channel_name = channel[start:end]
 
-
-print(latest_file)
-print(ROOT)
+print(channel_name)
