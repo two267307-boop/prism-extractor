@@ -2,10 +2,16 @@ import os
 import csv
 import json
 import time
+import pathlib
+from pathlib import Path
 from yt_dlp import YoutubeDL
 from datetime import datetime
 
-with open("../settings.json", "r") as file:
+ROOT = Path(__file__).resolve().parent.parent
+SETTINGS = ROOT / "settings.json"
+CHANNELS = ROOT / "channels"
+
+with open(SETTINGS, "r") as file:
     data: dict[str, dict] = json.load(file)
     ydl_opts: dict[str, bool] = data.get("ydl_opt")
     csv_timeout: int = data.get("csv").get("em_timeout")
@@ -14,9 +20,9 @@ with open("../settings.json", "r") as file:
 
 def write_to_csv(videos: list[str], channel: str) -> None:
     channel_name = channel[channel.find("@")::]
-    directory = fr"..\channels\{channel_name}"
-    os.makedirs(directory, exist_ok=True)
-    filename = fr"{directory}\Result{datetime.now().strftime(datetype)}.csv"
+    channel_dir = CHANNELS / channel_name
+    channel_dir.mkdir(parents=True, exist_ok=True)
+    filename = channel_dir / f"Result{datetime.now().strftime(datetype)}.csv"
 
     with YoutubeDL(ydl_opts) as ydl:
         with open(filename, "w", newline="", encoding="utf-8") as file:
