@@ -2,6 +2,7 @@ import os
 import csv
 import json
 import time
+import glob
 import pathlib
 from pathlib import Path
 from yt_dlp import YoutubeDL
@@ -41,3 +42,11 @@ def write_to_csv(videos: list[str], channel: str) -> None:
                     time.sleep(csv_timeout)
     return None
 
+def get_csv_name(channel: str) -> str:
+    channel_name: str = channel[channel.find("@")::]
+    filepath_get_csv: Path = ROOT / "channels" / channel_name
+    files: list[Path] = [f for f in filepath_get_csv.iterdir() if f.is_file()]
+    return max(files, key=lambda f: f.stat().st_ctime)
+
+
+print(get_csv_name("https://www.youtube.com/@fixmyoculus"))
