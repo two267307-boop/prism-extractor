@@ -10,5 +10,5 @@ def get_videos(channel: str) -> list[str]:
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(channel, download=False)
         for video in info.get("entries"):
-            videos.append(video.get("webpage_url"))
+            videos.append("https://www.youtube.com/watch?v=" + video["id"])
     return videos

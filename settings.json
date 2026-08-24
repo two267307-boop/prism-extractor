@@ -1,4 +1,16 @@
 {
   "ydl_opt": {"quiet": true, "no_warnings": true, "extract_flat": true, "skip_download": true},
-  "csv": {"em_timeout":  15, "datetype": "_%Y-%m-%d--%M"}
+  "csv": {
+    "em_timeout":  15,
+    "datetype": "_%Y-%m-%d--%M",
+    "fields": [
+    "uploader_id","channel","channel_id","channel_follower_count","creator","artist","title","thumbnail",
+    "id","duration","duration_string","view_count","like_count","comment_count","repost_count","average_rating","categories",
+    "tags","language","age_limit","live_status","was_live","availability","playlist","playlist_id","playlist_title",
+    "playlist_index","n_entries","fps","resolution","format_id","ext","vcodec","acodec",
+    "dynamic_range","aspect_ratio","filesize","tbr","vbr","abr","asr","audio_channels",
+    "extractor","extractor_key","webpage_url","original_url",
+    "webpage_url_basename","webpage_url_domain","upload_date","timestamp","release_date","release_timestamp","modified_date","license","epoch"
+    ]
+  }
 }

@@ -56,8 +56,7 @@ fields: tuple[str, ...] = (
     "vbr","abr","asr","audio_channels",
     "extractor","extractor_key","webpage_url","original_url",
     "webpage_url_basename","webpage_url_domain","upload_date","timestamp",
-    "release_date","release_timestamp","modified_date","license",
-    "epoch",
+    "release_date","release_timestamp","modified_date","license","epoch",
 )
 
 
