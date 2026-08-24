@@ -3,5 +3,5 @@ analysis.png
 __pycache__/
 *.pyc
 .gitignore
-creators/
+channels/
 *.png
