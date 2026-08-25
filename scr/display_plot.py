@@ -2,9 +2,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.ticker import MaxNLocator
 
-
-def display(filename):
-    df = pd.read_csv(filename)
+def display(filename) -> None:
+    df: pd.DataFrame = pd.read_csv(filename)
 
     fig, axes = plt.subplots(3, 2, figsize=(10, 8))
     ax1, ax2, ax3, ax4, ax5, ax6 = axes.ravel()
