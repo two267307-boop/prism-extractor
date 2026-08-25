@@ -172,7 +172,73 @@ prism/
 
 
 
+"""
+Yep. Here's the clean version of what I'd do with your current project.
 
+Keep extract_flat=True. Do not switch the whole channel extraction to False, because that's what made it painfully slow.
+
+Your first extraction should look roughly like:
+
+ydl_opts = {
+    "extract_flat": True,
+}
+
+Then:
+
+with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    info = ydl.extract_info(CHANNEL, download=False)
+
+for video in info["entries"]:
+    print(video["id"])
+    print(video["title"])
+    print(video["duration"])
+
+Those entries are the 702 videos you already got.
+
+For the additional fields you want, you then need to extract the individual video. But importantly, don't do that for videos you've already processed.
+
+Use the video ID as your key:
+
+for video in info["entries"]:
+    video_id = video["id"]
+
+    if video_id in already_processed:
+        continue
+
+    video_info = ydl.extract_info(video["url"], download=False)
+
+    save_video(video_info)
+
+And your fields can be:
+
+FIELDS = [
+    "id",
+    "title",
+    "view_count",
+    "like_count",
+    "comment_count",
+    "duration",
+    "filesize",
+    "fps",
+]
+
+So the workflow becomes:
+
+CHANNEL
+   ↓
+extract_flat=True
+   ↓
+702 cheap video entries
+   ↓
+check which IDs you already have
+   ↓
+only fully extract NEW videos
+   ↓
+save their metadata
+
+That means the first run is still going to take a while, because you genuinely need those extra fields. But every subsequent run should only process new videos instead of doing all 702 again.
+
+Also, your existing info["entries"] already gives you title, id, duration, etc., so use those directly rather than throwing them away and getting them again from video_info."""
 
 
 

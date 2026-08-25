@@ -34,8 +34,8 @@ def write_to_csv(videos: list[str], channel: str) -> None:
 
     channel_dir = CHANNELS / channel_name
     channel_dir.mkdir(parents=True, exist_ok=True)
-    filename = channel_dir / f"Result{datetime.now().strftime(datetype)}.csv"
-    filename_log = channel_dir / f"log{datetime.now().strftime(datetype_logging)}.txt"
+    filename = channel_dir / f"Result_{datetime.now().strftime(datetype)}.csv"
+    filename_log = channel_dir / f"log_{datetime.now().strftime(datetype_logging)}.txt"
 
     with YoutubeDL(ydl_opts) as ydl:
         with open(filename, "w", newline="", encoding="utf-8") as file:
@@ -52,7 +52,7 @@ def write_to_csv(videos: list[str], channel: str) -> None:
                     log.append(f"{index} | {url} | {datetime.now().strftime(datetype_logging)} | succeeded\n")
                 except Exception as exp:
                     print(f"{url} failed. It will be skipped and excluded. {exp}")
-                    log.append(f"{index} | {url} | {datetime.now().strftime(datetype_logging)} | failed\n")
+                    log.append(f"{index} | {url} | {datetime.now().strftime(datetype_logging)} | failed:\n")
                     time.sleep(emergency_timeout)
         if LOGGING:
             with open(filename_log, "w", newline="", encoding="utf-8") as file:
@@ -67,7 +67,8 @@ def get_csv_name(channel: str) -> str:
         channel_name = channel[start:]
     else:
         channel_name = channel[start:end]
+
     filepath_get_csv: Path = ROOT / "channels" / channel_name
-    files: list[Path] = [f for f in filepath_get_csv.iterdir() if f.is_file()]
+    files = [f for f in filepath_get_csv.iterdir() if f.is_file() and f.suffix == ".csv"]
     return max(files, key=lambda f: f.stat().st_ctime)
 

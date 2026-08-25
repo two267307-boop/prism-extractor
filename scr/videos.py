@@ -12,3 +12,5 @@ def get_videos(channel: str) -> list[str]:
         for video in info.get("entries"):
             videos.append("https://www.youtube.com/watch?v=" + video["id"])
     return videos
+
+

@@ -1,9 +1,10 @@
 {
-  "ydl_opt": {"quiet": true, "no_warnings": true, "extract_flat": true, "skip_download": true},
+  "ydl_opt": {"quiet": true, "no_warnings": true, "extract_flat": true, "skip_download": true, "sleep_interval": 2, "max_sleep_interval": 5, "sleep_requests": 2
+  },
   "csv": {
-    "em_timeout":  15,
-    "df_timeout": 4,
-    "datetype": "_%Y-%m-%d--%M",
+    "em_timeout":  60,
+    "df_timeout": 8,
+    "datetype": "%Y-%m-%d--%M",
     "fields": [
     "uploader_id","channel","channel_id","channel_follower_count","creator","artist","title","thumbnail",
     "id","duration","duration_string","view_count","like_count","comment_count","repost_count","average_rating","categories",
@@ -16,6 +17,6 @@
   },
   "logging": {
     "log": true,
-    "format": "_%Y-%m-%d--%H-%M-%S"
+    "format": "%Y-%m-%d--%H-%M-%S"
   }
 }
