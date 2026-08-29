@@ -2,7 +2,7 @@
 analysis.png
 __pycache__/
 *.pyc
-.gitignore
 channels/
 *.png
 scr/test.py
+prism.py

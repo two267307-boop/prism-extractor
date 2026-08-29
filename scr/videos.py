@@ -15,10 +15,8 @@ def get_videos(channel: str) -> list[str] | str:
     videos: list[str] = []
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(channel, download=False)
-        if info.get("entires") == None or info.get("entries") == "":
-            return "no public videos"
+        if info.get("entries") == None or info.get("entries") == []:
+            return []
         for video in info.get("entries"):
             videos.append("https://www.youtube.com/watch?v=" + video["id"])
-    return videos
-
-
+    return [videos, info]

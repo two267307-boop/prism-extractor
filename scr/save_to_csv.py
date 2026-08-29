@@ -7,6 +7,9 @@ import json
 import csv
 from datetime import datetime
 import time
+import json
+import os
+
 
 ROOT = Path(__file__).resolve().parent.parent
 SETTINGS = ROOT / "settings.json"
@@ -21,9 +24,12 @@ with open(SETTINGS, "r") as file:
     fields: list[str] = data.get("csv").get("fields")
     LOGGING: bool = data.get("logging").get("log")
     datetype_logging: str = data.get("logging").get("format")
+    SAVE_RAW: bool = data.get("raw").get("save_raw")
 
-def write_to_csv(videos: list[str], channel: str) -> None:
+def write_to_csv(videos: list[str], channel: str, raw_data: str) -> None:
     log = []
+    if videos == []:
+        raise SystemExit("No public videos available")
 
     start = channel.find("@")
     end = channel.find("/", start)
@@ -33,11 +39,24 @@ def write_to_csv(videos: list[str], channel: str) -> None:
         channel_name = channel[start:end]
 
     channel_dir = CHANNELS / channel_name
-    channel_dir.mkdir(parents=True, exist_ok=True)
-    filename = channel_dir / f"Result_{datetime.now().strftime(datetype)}.csv"
-    filename_log = channel_dir / f"log_{datetime.now().strftime(datetype_logging)}.txt"
+    results_dir = channel_dir / "results"
+    raw_data_dir = channel_dir / "raw"
+    logs_dir = channel_dir / "logs"
+
+    dirs = (channel_dir, results_dir, raw_data_dir, logs_dir)
+    for directory in dirs:
+        directory.mkdir(parents=True, exist_ok=True)
+
+    filename = channel_dir / "results" / f"Result_{datetime.now().strftime(datetype)}.csv"
+    filename_json = channel_dir / "raw" / f"raw_{datetime.now().strftime(datetype)}.json"
+    filename_log = channel_dir / "logs" / f"log_{datetime.now().strftime(datetype_logging)}.txt"
 
     with YoutubeDL(ydl_opts) as ydl:
+        if SAVE_RAW:
+            with open(filename_json, "w") as jsfile:
+                json.dump(raw_data, jsfile, indent=4)
+            jsfile.flush()
+
         with open(filename, "w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             writer.writerow(fields)

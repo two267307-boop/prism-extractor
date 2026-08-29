@@ -1,9 +1,16 @@
 {
-  "ydl_opt": {"quiet": true, "no_warnings": true, "extract_flat": true, "skip_download": true, "sleep_interval": 2, "max_sleep_interval": 5, "sleep_requests": 2
+  "ydl_opt": {
+    "quiet": true,
+    "no_warnings": true,
+    "extract_flat": true,
+    "skip_download": true,
+    "sleep_interval": 2,
+    "max_sleep_interval": 4,
+    "sleep_requests": 2
   },
   "csv": {
     "em_timeout":  60,
-    "df_timeout": 8,
+    "df_timeout": 4,
     "datetype": "%Y-%m-%d--%M",
     "fields": [
     "uploader_id","channel","channel_id","channel_follower_count","creator","artist","title","thumbnail",
@@ -14,6 +21,9 @@
     "extractor","extractor_key","webpage_url","original_url",
     "webpage_url_basename","webpage_url_domain","upload_date","timestamp","release_date","release_timestamp","modified_date","license","epoch"
     ]
+  },
+  "raw": {
+    "save_raw": true
   },
   "logging": {
     "log": true,
