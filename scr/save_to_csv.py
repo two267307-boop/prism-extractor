@@ -8,7 +8,7 @@ import csv
 from datetime import datetime
 import time
 import json
-import os
+
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -55,7 +55,7 @@ def write_to_csv(videos: list[str], channel: str, raw_data: str) -> None:
         if SAVE_RAW:
             with open(filename_json, "w") as jsfile:
                 json.dump(raw_data, jsfile, indent=4)
-            jsfile.flush()
+                jsfile.flush()
 
         with open(filename, "w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
@@ -71,7 +71,7 @@ def write_to_csv(videos: list[str], channel: str, raw_data: str) -> None:
                     log.append(f"{index} | {url} | {datetime.now().strftime(datetype_logging)} | succeeded\n")
                 except Exception as exp:
                     print(f"{url} failed. It will be skipped and excluded. {exp}")
-                    log.append(f"{index} | {url} | {datetime.now().strftime(datetype_logging)} | failed:\n")
+                    log.append(f"{index} | {url} | {datetime.now().strftime(datetype_logging)} | failed\n")
                     time.sleep(emergency_timeout)
         if LOGGING:
             with open(filename_log, "w", newline="", encoding="utf-8") as file:
@@ -79,20 +79,21 @@ def write_to_csv(videos: list[str], channel: str, raw_data: str) -> None:
                     file.write(line)
     return None
 
-def get_csv_name(channel: str) -> str | Exception:
-    try:
-        start = channel.find("@")
-        end = channel.find("/", start)
-    except ValueError as ve:
-        return ve
+def get_csv_name(channel: str) -> Path:
+    start = channel.find("@")
+    end = channel.find("/", start)
+
     if end == -1:
         channel_name = channel[start:]
     else:
         channel_name = channel[start:end]
-    try:
-        filepath_get_csv: Path = ROOT / "channels" / channel_name
-        files = [f for f in filepath_get_csv.iterdir() if f.is_file() and f.suffix == ".csv"]
-        return max(files, key=lambda f: f.stat().st_ctime)
-    except Exception:
-        return Exception
+
+    filepath = ROOT / "channels" / channel_name
+
+    files = [
+        f for f in filepath.iterdir()
+        if f.is_file() and f.suffix == ".csv"
+    ]
+
+    return max(files, key=lambda f: f.stat().st_ctime)
 

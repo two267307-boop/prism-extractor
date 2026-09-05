@@ -2,17 +2,17 @@ from videos import get_videos
 from save_to_csv import write_to_csv, get_csv_name
 from display_plot import display
 
-CHANNEL = "https://www.youtube.com/@JoeBartGames"
+CHANNEL = input("Channel: ")
 
-#if CHANNEL.endswith("/featured"):
-    #CHANNEL.replace("/featured", "/videos")
-#elif CHANNEL.endswith()
-#if not CHANNEL.endswith("/videos"):
-    #CHANNEL += "/video"
+endings = ["/featured", "/posts", "playlists", "/streams", "/shorts"]
 
+if not CHANNEL.endswith("/videos"):
+    for ending in endings:
+        if CHANNEL.endswith(ending):
+            CHANNEL = CHANNEL.replace(ending, "/videos")
+    if not CHANNEL.endswith("/videos"):
+        CHANNEL += "/videos"
 
-if not "/videos" in CHANNEL:
-    CHANNEL += "/videos"
 
 videos_x = get_videos(CHANNEL)
 

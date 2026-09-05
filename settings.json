@@ -13,17 +13,21 @@
     "df_timeout": 4,
     "datetype": "%Y-%m-%d--%M",
     "fields": [
-    "uploader_id","channel","channel_id","channel_follower_count","creator","artist","title","thumbnail",
-    "id","duration","duration_string","view_count","like_count","comment_count","repost_count","average_rating","categories",
-    "tags","language","age_limit","live_status","was_live","availability","playlist","playlist_id","playlist_title",
-    "playlist_index","n_entries","fps","resolution","format_id","ext","vcodec","acodec",
-    "dynamic_range","aspect_ratio","filesize","tbr","vbr","abr","asr","audio_channels",
-    "extractor","extractor_key","webpage_url","original_url",
-    "webpage_url_basename","webpage_url_domain","upload_date","timestamp","release_date","release_timestamp","modified_date","license","epoch"
+        "id","title","thumbnails","thumbnail","description","channel_id","channel_url","duration",
+        "view_count","average_rating","age_limit","webpage_url","categories","tags","playable_in_embed","live_status",
+        "media_type","release_timestamp","_format_sort_fields","subtitles","comment_count","chapters","like_count","channel",
+        "channel_follower_count","creators","channel_is_verified","uploader","uploader_id","uploader_url","upload_date","timestamp",
+        "availability","original_url","webpage_url_basename","webpage_url_domain","extractor","extractor_key","playlist","playlist_index",
+        "display_id","fulltitle","duration_string","release_year","is_live","was_live","requested_subtitles","_has_drm",
+        "epoch", "asr", "filesize", "format_id","format_note","source_preference","fps","audio_channels",
+        "height","quality","has_drm","tbr","filesize_approx","width","language","language_preference",
+        "preference","ext","vcodec","acodec","dynamic_range","url","available_at","downloader_options",
+        "protocol","video_ext","audio_ext","vbr","abr","resolution","aspect_ratio","http_headers","format"
     ]
   },
   "raw": {
-    "save_raw": true
+    "save_raw": true,
+    "comment": "Raw uses the same format, that logging does"
   },
   "logging": {
     "log": true,

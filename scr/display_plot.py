@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.ticker import MaxNLocator
 
-def display(filename) -> None:
+def display(filename: str) -> None:
     df: pd.DataFrame = pd.read_csv(filename)
 
     fig, axes = plt.subplots(3, 2, figsize=(10, 8))
