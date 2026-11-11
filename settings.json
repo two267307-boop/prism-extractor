@@ -1,4 +1,5 @@
 {
+  "clear_afer_print": true,
   "ydl_opt": {
     "quiet": true,
     "no_warnings": true,

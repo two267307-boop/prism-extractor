@@ -10,7 +10,7 @@ with open(SETTINGS, "r") as file:
     data: dict[str, dict[str, Any]] = json.load(file)
     ydl_opts: dict[str, Any] = data.get("ydl_opt")
 
-def get_videos(channel: str) -> list[str] | list[str | dict]:
+def get_videos(channel: str) -> list[None] | list[str | dict]:
     videos: list[str] = []
     with YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(channel, download=False)
