@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import logging
-import re
 import time
 from typing import Any
 from urllib.parse import urlparse
@@ -58,14 +57,16 @@ def extract_channel(channel: str, settings: dict[str, Any]) -> dict[str, Any]:
 
     with YoutubeDL(_ydl_options(settings, flat=True)) as ydl:
         playlist_info = ydl.extract_info(channel_url, download=False)
-    entries = (playlist_info or {}).get("entries") or []
-    entries = [entry for entry in entries if entry]
+    entries = [entry for entry in ((playlist_info or {}).get("entries") or []) if entry]
     logging.info("%s: discovered %d entries", channel_url, len(entries))
 
     detail_options = _ydl_options(settings, flat=False)
     for index, entry in enumerate(entries, start=1):
         video_id = entry.get("id")
-        url = entry.get("url") or entry.get("webpage_url")
+        url = entry.get("webpage_url")
+        candidate = entry.get("url")
+        if not url and isinstance(candidate, str) and candidate.startswith(("http://", "https://")):
+            url = candidate
         if not url and video_id:
             url = f"https://www.youtube.com/watch?v={video_id}"
         if not url:

@@ -80,6 +80,7 @@ def _process_one(channel: str, settings: dict[str, Any]) -> tuple[str, Path | No
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     settings = load_settings()
 
     if not args.no_logo and settings.get("show_logo", True):
