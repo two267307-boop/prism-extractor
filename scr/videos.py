@@ -45,7 +45,7 @@ def _ydl_options(settings: dict[str, Any], *, flat: bool) -> dict[str, Any]:
     return options
 
 
-def extract_channel(channel: str, settings: dict[str, Any]) -> dict[str, Any]:
+def extract_channel(channel: str, settings: dict[str, Any], progress_callback=None) -> dict[str, Any]:
     """Discover a channel's videos, then extract each video's metadata."""
     channel_url = normalize_channel_url(channel)
     retry_settings = settings.get("concurrency", {})
@@ -59,6 +59,8 @@ def extract_channel(channel: str, settings: dict[str, Any]) -> dict[str, Any]:
         playlist_info = ydl.extract_info(channel_url, download=False)
     entries = [entry for entry in ((playlist_info or {}).get("entries") or []) if entry]
     logging.info("%s: discovered %d entries", channel_url, len(entries))
+    if progress_callback:
+        progress_callback(f"Discovered {len(entries)} video entries.", 0, len(entries), "Extracting")
 
     detail_options = _ydl_options(settings, flat=False)
     for index, entry in enumerate(entries, start=1):
@@ -80,10 +82,14 @@ def extract_channel(channel: str, settings: dict[str, Any]) -> dict[str, Any]:
                 if info:
                     videos.append(info)
                 logging.info("%s: processed %d/%d", channel_url, index, len(entries))
+                if progress_callback:
+                    progress_callback(f"Processed {index}/{len(entries)}: {info.get('title') or video_id or 'video'}", index, len(entries), "Extracting")
                 break
             except Exception as exc:
                 if attempt >= retries:
                     failures.append({"id": str(video_id or url), "error": str(exc)})
+                    if progress_callback:
+                        progress_callback(f"Failed {video_id or url}: {exc}", index, len(entries), "Extracting")
                     logging.warning("%s: skipping %s after %d attempt(s): %s", channel_url, url, attempt + 1, exc)
                 else:
                     time.sleep(retry_delay * (attempt + 1))
