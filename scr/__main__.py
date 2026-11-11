@@ -53,13 +53,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help="Maximum number of channels processed concurrently (default: settings.json).",
     )
+    parser.add_argument("--gui", action="store_true", help="Open the desktop windowed interface.")
     parser.add_argument("--no-plot", action="store_true", help="Do not display result plots.")
     parser.add_argument("--no-logo", action="store_true", help="Skip the animated terminal logo.")
     parser.add_argument("--version", action="version", version="Prism Extractor 2.0.0")
     args = parser.parse_args(argv)
     args.channels = list(dict.fromkeys(args.channels + args.extra_channels))
-    if not args.channels:
-        parser.error("provide at least one channel URL or handle")
+    if not args.channels and not args.gui:
+        parser.error("provide at least one channel URL or handle, or use --gui")
     if args.workers is not None and args.workers < 1:
         parser.error("--workers must be at least 1")
     return args
@@ -80,6 +81,10 @@ def _process_one(channel: str, settings: dict[str, Any]) -> tuple[str, Path | No
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    if args.gui:
+        from .gui import main as gui_main
+        gui_main()
+        return 0
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     settings = load_settings()
 
