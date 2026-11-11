@@ -9,7 +9,8 @@ ROOT = Path(__file__).resolve().parent.parent
 
 def get_csv_name(channel: str) -> Path:
     match = re.search(r"/(@[^/]+|channel/[^/]+|c/[^/]+|user/[^/]+)", channel)
-    slug = match.group(1) if match else "channel"
+    raw_slug = match.group(1) if match else "channel"
+    slug = re.sub(r"[^A-Za-z0-9_.@-]+", "_", raw_slug).strip("._") or "channel"
     directory = ROOT / "channels" / slug / "results" / "csv"
     latest = directory / "latest.csv"
     if latest.is_file():
