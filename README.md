@@ -21,6 +21,16 @@ cd prism-extractor
 python -m pip install -r requirements.txt
 ```
 
+## Desktop app
+
+Launch the windowed interface with:
+
+```bash
+python -m scr --gui
+```
+
+Paste one channel URL or `@handle` per line, choose the maximum number of concurrent workers, and click **Start extraction**. Each channel gets its own worker panel with an independent status, progress bar, and live log. The GUI uses the same extraction and output code as the CLI. Tkinter is included with most standard Python installations; on some Linux distributions it may need to be installed separately (for example, `python3-tk`).
+
 ## Usage
 
 Pass one or more channel URLs or handles:
