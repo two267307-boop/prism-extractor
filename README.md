@@ -1,49 +1,66 @@
-# prism-extractor
+# Prism Extractor
 
-A simple and easy-to-use Python tool for extracting information about YouTube channels.
+Prism Extractor collects public video metadata from YouTube channels and exports it to CSV and JSON, with optional plots.
 
-## Overview
-
-**prism-extractor** Is a tool for extracting info for YouTube channels, built on python.
-
-The goal of this project is to simplify YouTube analyzation, making it easier to gain a good sight of things.
-
-## Installation
-Clone the repository:
-
-```
-git clone https://github.com/two267306-boop/prism-extractor.git
-```
-Navigate into the project folder:
-
-    cd prism
-To install the required dependencies, run:
-
-```bash
-pip install -r requirements.txt
-```
-or download the py file*s manually from the repository.
-## Usage
-
-Start the program by running:
-
-```
-python prism.py --channel -timeout (1 by default)
-```
-
-To reuse existing data use ``--reuse`` or ``-r`` only.
-By default, the timeout is set to one, meaning it will wait two seconds before starting another video. This may cause YouTube to rate limit you. In case an error occurs, by default the program will wait 60 seconds before starting of again.
-
-Use ``--save`` or ``-s`` to automatically save the plot as a picture. You can still export it even with having this disabled.
 ## Features
 
-- Simple information extraction
-- Graph with all information
-- Automatically saves to csv file
+- Process multiple channels concurrently.
+- Isolate channel failures so one unavailable channel does not cancel the others.
+- Retry transient video extraction errors with configurable backoff.
+- Keep each channel's output in its own directory.
+- Export timestamped CSV/JSON, raw extraction data, and a per-run log.
+- Generate plots for metrics available in the exported CSV.
 
-## Requirements
+## Install
 
-- Python 3
-- Dependencies listed in `requirements.txt`
+Python 3.10 or newer is recommended.
 
-Partially made with AI. Mainly used to get the basics, I expanded on them further myself.
+```bash
+git clone https://github.com/two267307-boop/prism-extractor.git
+cd prism-extractor
+python -m pip install -r requirements.txt
+```
+
+## Usage
+
+Pass one or more channel URLs or handles:
+
+```bash
+python -m scr https://www.youtube.com/@SomeChannel @AnotherChannel
+```
+
+You can also repeat `--channel`:
+
+```bash
+python -m scr --channel @SomeChannel --channel @AnotherChannel --workers 4
+```
+
+Useful options:
+
+- `--workers N`: maximum number of channels processed at the same time.
+- `--no-plot`: save results without opening plot windows.
+- `--no-logo`: skip the terminal animation.
+- `--version`: print the program version.
+
+Run `python -m scr --help` for the complete CLI help.
+
+## Output layout
+
+```
+channels/
+  <channel-id-or-handle>/
+    raw/
+    logs/
+    results/
+      csv/
+        Result_<timestamp>.csv
+        latest.csv
+      json/
+        Result_<timestamp>.json
+```
+
+## Configuration
+
+Edit `settings.json` to configure yt-dlp options, concurrency, retries, exported fields, and output formats. Keep channel concurrency modest; YouTube may throttle automated requests.
+
+The tool only requests metadata (`download=False`) and does not download video files.

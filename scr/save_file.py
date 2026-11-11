@@ -1,138 +1,76 @@
-try:
-    from yt_dlp import YoutubeDL
-except ModuleNotFoundError as e:
-    raise SystemExit(f"Module {e} not found")
-from pathlib import Path
-from datetime import datetime
-import time
-import json
+"""Safe, channel-isolated output writers."""
+from __future__ import annotations
+
 import csv
+import json
+import logging
+import re
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_FIELDS = ["id", "title", "uploader", "upload_date", "duration", "view_count",
+                  "like_count", "comment_count", "fps", "width", "height", "filesize",
+                  "thumbnail", "webpage_url"]
 
 
+def channel_slug(channel_info: dict[str, Any], channel_url: str) -> str:
+    # Prefer the stable human-readable handle so legacy tools can locate the folder.
+    match = re.search(r"/(@[^/]+|channel/[^/]+|c/[^/]+|user/[^/]+)", channel_url)
+    candidate = match.group(1) if match else (
+        (channel_info or {}).get("channel_id") or (channel_info or {}).get("id") or "channel"
+    )
+    slug = re.sub(r"[^A-Za-z0-9_.@-]+", "_", str(candidate)).strip("._")
+    return slug or "channel"
 
-def write_data(videos: list[str], channel: str, raw_data: dict) -> None | Exception:
-    if videos is None or videos == []:
-        raise SystemExit("No videos to loop over, empty list")
-    if channel is None or channel == "":
-        raise SystemExit("Channel not given, this is required for folder names.")
 
-    start = channel.find("@")
-    end = channel.find("/", start)
-    if end == -1:
-        channel_name = channel[start:]
-    else:
-        channel_name = channel[start:end]
-
-    #directory name stuff
-    ROOT     = Path(__file__).resolve().parent.parent
-    SETTINGS = ROOT / "settings.json"
-    CHANNELS = ROOT / "channels"
-
-    channel_dir  = CHANNELS    / channel_name
-    results_dir  = channel_dir / "results"
-    raw_data_dir = channel_dir / "raw"
-    logs_dir     = channel_dir / "logs"
-    json_dir     = results_dir / "json"
-    csv_dir      = results_dir / "csv"
-
-    #create directories
-    dirs = (channel_dir, results_dir, raw_data_dir, logs_dir, json_dir, csv_dir)
-    for directory in dirs:
+def save_channel_results(result: dict[str, Any], settings: dict[str, Any]) -> Path:
+    channel_info = result.get("channel_info") or {}
+    channel_url = result["channel_url"]
+    videos = result.get("videos") or []
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d--%H-%M-%S-%f")
+    channel_dir = ROOT / "channels" / channel_slug(channel_info, channel_url)
+    raw_dir = channel_dir / "raw"
+    logs_dir = channel_dir / "logs"
+    json_dir = channel_dir / "results" / "json"
+    csv_dir = channel_dir / "results" / "csv"
+    for directory in (raw_dir, logs_dir, json_dir, csv_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
-    #loading settings
-    with open(SETTINGS, "r") as file:
-        data: dict[str, dict] = json.load(file)
+    fields = settings.get("saving", {}).get("fields") or DEFAULT_FIELDS
+    exported = [{field: video.get(field) for field in fields} for video in videos]
 
-        YDL_OPTIONS = data.get("ydl_opt")
-        CLEAR_AFTER_PRINT = data.get("clear_afer_print")
+    if settings.get("raw", {}).get("save_raw", True):
+        (raw_dir / f"raw_{now}.json").write_text(
+            json.dumps(result, ensure_ascii=False, indent=2, default=str), encoding="utf-8"
+        )
 
-        EMERGENCY_TIMEOUT = data.get("saving").get("em_timeout")
-        DEFAULT_TIMEOUT   = data.get("saving").get("df_timeout")
-        FIELDS            = data.get("saving").get("fields")
+    if settings.get("json", {}).get("save_json", True):
+        json_path = json_dir / f"Result_{now}.json"
+        json_path.write_text(
+            json.dumps(exported, ensure_ascii=False,
+                       indent=settings.get("json", {}).get("indent", 2), default=str),
+            encoding="utf-8",
+        )
 
-        SAVE_RAW  = data.get("raw").get("save_raw")
-        SAVE_LOG  = data.get("logging").get("save_log")
-        SAVE_JSON = data.get("json").get("save_json")
-        SAVE_CSV  = data.get("csv").get("save_csv")
+    if settings.get("csv", {}).get("save_csv", True):
+        csv_path = csv_dir / f"Result_{now}.csv"
+        with csv_path.open("w", newline="", encoding="utf-8-sig") as stream:
+            writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
+            writer.writeheader()
+            writer.writerows(exported)
+        latest_tmp = csv_dir / f"latest-{now}.tmp"
+        latest_tmp.write_bytes(csv_path.read_bytes())
+        latest_tmp.replace(csv_dir / "latest.csv")
 
-        RAW_DATETYPE  = data.get("raw").get("format")
-        LOG_DATETYPE  = data.get("logging").get("format")
-        JSON_DATETYPE = data.get("json").get("format")
-        CSV_DATETYPE  = data.get("csv").get("format")
+    if settings.get("logging", {}).get("save_log", True):
+        log_path = logs_dir / f"log_{now}.txt"
+        lines = [f"Channel: {channel_url}", f"Videos discovered: {len(videos)}",
+                 f"Video failures: {len(result.get('failures') or [])}"]
+        lines.extend(f"FAILED {failure.get('id')}: {failure.get('error')}"
+                     for failure in result.get("failures", []))
+        log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
-        RAW_INDENT  = data.get("raw").get("indent")
-        JSON_INDENT = data.get("json").get("indent")
-
-    if not SAVE_RAW and not SAVE_LOG and not SAVE_JSON and not SAVE_CSV:
-        raise SystemExit("No savestate enabled")
-
-    filename_raw  = channel_dir / "raw"     / f"raw_{datetime.now().strftime(RAW_DATETYPE)}.json"
-    filename_log  = channel_dir / "logs"    / f"log_{datetime.now().strftime(LOG_DATETYPE)}.txt"
-    filename_json = channel_dir / "results" / "json" / f"Result_{datetime.now().strftime(JSON_DATETYPE)}.json"
-    filename_csv  = channel_dir / "results" / "csv"  / f"Result_{datetime.now().strftime(CSV_DATETYPE)}.csv"
-
-    #I lowkey had no clue how to do this so I did kinda relie on chatgpt, especially with json
-    csv_file   = None
-    csv_writer = None
-    json_file  = None
-    first_json = True
-
-
-    if SAVE_CSV:
-        csv_file   = open(filename_csv, "a", newline="", encoding="utf-8")
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(FIELDS)
-    if SAVE_JSON:
-        json_file = open(filename_json, "w", encoding="utf-8")
-        json_file.write("[")
-    if SAVE_RAW:
-        with open(filename_raw, "w") as rawfile:
-            json.dump(raw_data, rawfile, indent=RAW_INDENT)
-            rawfile.flush()
-    if SAVE_LOG:
-        log_file = open(filename_log, "a", encoding="utf-8")
-
-    with YoutubeDL(YDL_OPTIONS) as ydl:
-        for index, url in enumerate(videos, start=1):
-            time.sleep(DEFAULT_TIMEOUT)
-
-            try:
-                info = ydl.extract_info(url, download=False)
-                if CLEAR_AFTER_PRINT:
-                    print(f"\r▸ [{index}/{len(videos)}] : [{index / len(videos) * 100:.1f}%] {info["title"]}", end="")
-                else: 
-                    print(f"▸ [{index}/{len(videos)}] : [{index / len(videos) * 100:.1f}%] {info["title"]}") 
-
-                if SAVE_CSV:
-                    csv_writer.writerow([info.get(field) for field in FIELDS])
-                    csv_file.flush()
-
-                if SAVE_JSON:
-                    json_info = {field: info.get(field) for field in FIELDS}
-
-                    if not first_json:
-                        json_file.write(",")
-
-                    json.dump(json_info, json_file, indent=JSON_INDENT)
-                    json_file.flush()
-
-                    first_json = False
-
-                if SAVE_LOG:
-                    log_file.write(f"{index} | {url} | {datetime.now().strftime(LOG_DATETYPE)} | succeeded\n")
-
-            except Exception as exp:
-                print(f"{url} failed. It will be skipped and excluded. {exp}")
-                if SAVE_LOG:
-                    log_file.write(f"{index} | {url} | {datetime.now().strftime(LOG_DATETYPE)} | failed\n")
-                time.sleep(EMERGENCY_TIMEOUT)
-
-        if SAVE_JSON:
-            json_file.write("]")
-            json_file.close()
-        if SAVE_CSV:
-            csv_file.close()
-        if SAVE_LOG:
-            log_file.close()
-
+    logging.info("Wrote channel data to %s", channel_dir)
+    return channel_dir

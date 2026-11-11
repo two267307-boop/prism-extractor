@@ -1,8 +1,6 @@
 .venv/
-analysis.png
 __pycache__/
-*.pyc
+*.py[cod]
 channels/
 *.png
-scr/test.py
-prism.py
+.pytest_cache/

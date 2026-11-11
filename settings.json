@@ -1,51 +1,46 @@
 {
-  "clear_afer_print": true,
+  "show_logo": true,
+  "concurrency": {
+    "channels": 3,
+    "retries": 2,
+    "retry_delay": 5
+  },
   "ydl_opt": {
     "quiet": true,
     "no_warnings": true,
     "extract_flat": true,
     "skip_download": true,
-    "sleep_interval": 2,
+    "sleep_interval": 1,
     "max_sleep_interval": 2,
-    "sleep_requests": 2
+    "sleep_requests": 1
   },
   "saving": {
-    "em_timeout":  60,
-    "df_timeout": 3,
     "fields": [
       "uploader_id", "channel_id", "uploader", "channel_url", "channel_follower_count",
-      "channel_is_verified", "creators", "uploader_url", "id", "title", "thumbnail", 
+      "channel_is_verified", "creators", "uploader_url", "id", "title", "thumbnail",
       "view_count", "like_count", "comment_count", "upload_date", "language", "availability",
-      "duration", "average_rating", "age_limit", "categories", "tags", "available_at",
-      "language_preference", "preference", "quality", "live_status", "was_live", "is_live",
-      "format", "http_headers", "aspect_ratio", "resolution", "abr", "vbr", "ext", "tbr", "asr",
-      "_has_drm", "has_drm", "audio_ext", "video_ext", "protocol", "downloader_options",
-      "dynamic_range", "acodec", "vcodec", "filesize_approx", "format_note", "source_preference",
-      "audio_channels", "width", "height", "fps", "release_year", "requested_subtitles",
-      "filesize", "format_id", "epoch", "duration_string", "fulltitle", "display_id",
-      "playlist_index", "playlist", "extractor", "timestamp", "extractor_key",
-      "release_timestamp", "_format_sort_fields", "subtitles", "chapters",
-      "channel", "media_type", "playable_in_embed", "original_url",
-      "webpage_url", "webpage_url_basename", "webpage_url_domain"
-    ],
-    "currently_unused": ["thumbnails -> thumbnail", "url -> comment_count"]
+      "duration", "average_rating", "age_limit", "categories", "tags", "live_status",
+      "was_live", "is_live", "format", "aspect_ratio", "resolution", "abr", "vbr",
+      "ext", "tbr", "asr", "audio_ext", "video_ext", "protocol", "dynamic_range",
+      "acodec", "vcodec", "filesize_approx", "format_note", "audio_channels",
+      "width", "height", "fps", "release_year", "filesize", "format_id", "epoch",
+      "duration_string", "fulltitle", "display_id", "playlist_index", "extractor",
+      "timestamp", "extractor_key", "release_timestamp", "channel", "media_type",
+      "playable_in_embed", "original_url", "webpage_url", "webpage_url_basename",
+      "webpage_url_domain"
+    ]
   },
   "raw": {
-    "save_raw": true,
-    "format": "%Y-%m-%d--%H-%M-%S",
-    "indent": 2
+    "save_raw": true
   },
   "logging": {
-    "save_log": true,
-    "format": "%Y-%m-%d--%H-%M-%S"
+    "save_log": true
   },
   "json": {
     "save_json": true,
-    "format": "%Y-%m-%d--%H-%M-%S",
     "indent": 2
   },
   "csv": {
-    "save_csv": true,
-    "format":"%Y-%m-%d--%H-%M-%S"
+    "save_csv": true
   }
 }
